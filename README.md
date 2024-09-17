@@ -1,4 +1,5 @@
 # Projekt-aplikacji
+Kalkulator
 
 1. Aplikacja służy do obliczania działań matematycznych.
 
