@@ -22,4 +22,4 @@ Kalkulator
 
 WERSYFIKACJA
 1. ver. 0.00 Alpha.Beta
-powstanie pliku aplikacji
+- powstanie pliku aplikacji
