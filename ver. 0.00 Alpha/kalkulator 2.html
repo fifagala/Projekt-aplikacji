@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator z pamięcią</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .calculator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .display {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 10px;
+            text-align: right;
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .button {
+            padding: 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+        .button.operator {
+            background-color: #f9a825;
+            color: #fff;
+        }
+        .button.equal {
+            background-color: #4caf50;
+            color: #fff;
+            grid-column: span 2;
+        }
+        .button.clear {
+            background-color: #f44336;
+            color: #fff;
+            grid-column: span 2;
+        }
+        .button.clear-history {
+            background-color: #ff9800;
+            color: #fff;
+            grid-column: span 4;
+        }
+        .history {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .history-item {
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+        }
+        .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display">
+        <div class="buttons">
+            <button class="button" onclick="appendNumber('1')" onmousedown="showTooltip(this, '1')" onmouseup="hideTooltip(this)">1</button>
+            <button class="button" onclick="appendNumber('2')" onmousedown="showTooltip(this, '2')" onmouseup="hideTooltip(this)">2</button>
+            <button class="button" onclick="appendNumber('3')" onmousedown="showTooltip(this, '3')" onmouseup="hideTooltip(this)">3</button>
+            <button class="button operator" onclick="appendOperator('+')" onmousedown="showTooltip(this, 'Dodawanie')" onmouseup="hideTooltip(this)">+</button>
+            <button class="button" onclick="appendNumber('4')" onmousedown="showTooltip(this, '4')" onmouseup="hideTooltip(this)">4</button>
+            <button class="button" onclick="appendNumber('5')" onmousedown="showTooltip(this, '5')" onmouseup="hideTooltip(this)">5</button>
+            <button class="button" onclick="appendNumber('6')" onmousedown="showTooltip(this, '6')" onmouseup="hideTooltip(this)">6</button>
+            <button class="button operator" onclick="appendOperator('-')" onmousedown="showTooltip(this, 'Odejmowanie')" onmouseup="hideTooltip(this)">-</button>
+            <button class="button" onclick="appendNumber('7')" onmousedown="showTooltip(this, '7')" onmouseup="hideTooltip(this)">7</button>
+            <button class="button" onclick="appendNumber('8')" onmousedown="showTooltip(this, '8')" onmouseup="hideTooltip(this)">8</button>
+            <button class="button" onclick="appendNumber('9')" onmousedown="showTooltip(this, '9')" onmouseup="hideTooltip(this)">9</button>
+            <button class="button operator" onclick="appendOperator('*')" onmousedown="showTooltip(this, 'Mnożenie')" onmouseup="hideTooltip(this)">*</button>
+            <button class="button" onclick="appendNumber('0')" onmousedown="showTooltip(this, '0')" onmouseup="hideTooltip(this)">0</button>
+            <button class="button" onclick="appendOperator('.')" onmousedown="showTooltip(this, 'Kropka')" onmouseup="hideTooltip(this)">.</button>
+            <button class="button operator" onclick="appendOperator('/')" onmousedown="showTooltip(this, 'Dzielenie')" onmouseup="hideTooltip(this)">/</button>
+            <button class="button operator" onclick="appendOperator('**')" onmousedown="showTooltip(this, 'Potęgowanie')" onmouseup="hideTooltip(this)">^</button>
+            <button class="button operator" onclick="appendOperator('%')" onmousedown="showTooltip(this, 'Procent')" onmouseup="hideTooltip(this)">%</button>
+            <button class="button operator" onclick="appendOperator('//')" onmousedown="showTooltip(this, 'Reszta z dzielenia')" onmouseup="hideTooltip(this)">mod</button>
+            <button class="button equal" onclick="calculate()" onmousedown="showTooltip(this, 'Równa się')" onmouseup="hideTooltip(this)">=</button>
+            <button class="button clear" onclick="clearDisplay()" onmousedown="showTooltip(this, 'Wyczyść')" onmouseup="hideTooltip(this)">C</button>
+            <button class="button clear-history" onclick="clearHistory()" onmousedown="showTooltip(this, 'Wyczyść historię')" onmouseup="hideTooltip(this)">Clear History</button>
+        </div>
+        <div class="history" id="history"></div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let history = document.getElementById('history');
+        let currentInput = '';
+        let operationsHistory = [];
+        let tooltipTimeout;
+
+        function appendNumber(number) {
+            currentInput += number;
+            display.value = currentInput;
+        }
+
+        function appendOperator(operator) {
+            if (operator === '//') {
+                currentInput += ' % ';
+            } else {
+                currentInput += ' ' + operator + ' ';
+            }
+            display.value = currentInput;
+        }
+
+        function calculate() {
+            try {
+                let result = eval(currentInput.replace(/\/\//g, '%'));
+                display.value = result;
+                addToHistory(currentInput + ' = ' + result);
+                currentInput = result.toString();
+            } catch (error) {
+                display.value = 'Error';
+                currentInput = '';
+            }
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            display.value = '';
+        }
+
+        function clearHistory() {
+            operationsHistory = [];
+            updateHistoryDisplay();
+        }
+
+        function addToHistory(operation) {
+            operationsHistory.unshift(operation);
+            if (operationsHistory.length > 20) {
+                operationsHistory.pop();
+            }
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            history.innerHTML = '';
+            operationsHistory.forEach((op, index) => {
+                let historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.textContent = op;
+                historyItem.onclick = () => loadFromHistory(index);
+                history.appendChild(historyItem);
+            });
+        }
+
+        function loadFromHistory(index) {
+            let operation = operationsHistory[index];
+            let [expression, result] = operation.split(' = ');
+            currentInput = expression;
+            display.value = result;
+        }
+
+        function showTooltip(button, text) {
+            tooltipTimeout = setTimeout(() => {
+                let tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = text;
+                button.appendChild(tooltip);
+                tooltip.style.display = 'block';
+            }, 500); // Skrócony czas do 500 ms
+        }
+
+        function hideTooltip(button) {
+            clearTimeout(tooltipTimeout);
+            let tooltip = button.querySelector('.tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            if (!isNaN(key) || key === '.') {
+                appendNumber(key);
+            } else if (['+', '-', '*', '/', '%', '^'].includes(key)) {
+                appendOperator(key === '^' ? '**' : key);
+            } else if (key === 'Enter') {
+                calculate();
+            } else if (key === 'Backspace') {
+                clearDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
