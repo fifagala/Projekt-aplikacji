@@ -1,25 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator z pamięcią</title>
+    <title>Kalkulator Graficzny i Z Pamięcią</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
+            text-align: center;
+            margin: 20px;
         }
-        .calculator {
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+        .controls input, .controls button {
+            padding: 5px;
+            margin: 5px;
+        }
+        .tooltip {
+            position: absolute;
+            background-color: #fff;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .kalkulator {
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
         }
-        .display {
+
+        .wyswietlacz {
             width: 100%;
             height: 40px;
             margin-bottom: 10px;
@@ -29,12 +47,14 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        .buttons {
+
+        .przyciski {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
-        .button {
+
+        .przycisk {
             padding: 20px;
             font-size: 18px;
             border: none;
@@ -42,36 +62,43 @@
             cursor: pointer;
             position: relative;
         }
-        .button.operator {
+
+        .operator {
             background-color: #f9a825;
             color: #fff;
         }
-        .button.equal {
+
+        .rowna-sie {
             background-color: #4caf50;
             color: #fff;
             grid-column: span 2;
         }
-        .button.clear {
+
+        .wyczysc {
             background-color: #f44336;
             color: #fff;
             grid-column: span 2;
         }
-        .button.clear-history {
+
+        .wyczysc-historie {
             background-color: #ff9800;
             color: #fff;
             grid-column: span 4;
         }
-        .history {
+
+        .historia {
             margin-top: 20px;
             max-height: 200px;
             overflow-y: auto;
         }
-        .history-item {
+
+        .element-historii {
             font-size: 14px;
             color: #555;
             cursor: pointer;
         }
-        .tooltip {
+
+        .podpowiedz {
             display: none;
             position: absolute;
             bottom: 100%;
@@ -87,133 +114,134 @@
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <input type="text" class="display" id="display">
-        <div class="buttons">
-            <button class="button" onclick="appendNumber('1')" onmousedown="showTooltip(this, '1')" onmouseup="hideTooltip(this)">1</button>
-            <button class="button" onclick="appendNumber('2')" onmousedown="showTooltip(this, '2')" onmouseup="hideTooltip(this)">2</button>
-            <button class="button" onclick="appendNumber('3')" onmousedown="showTooltip(this, '3')" onmouseup="hideTooltip(this)">3</button>
-            <button class="button operator" onclick="appendOperator('+')" onmousedown="showTooltip(this, 'Dodawanie')" onmouseup="hideTooltip(this)">+</button>
-            <button class="button" onclick="appendNumber('4')" onmousedown="showTooltip(this, '4')" onmouseup="hideTooltip(this)">4</button>
-            <button class="button" onclick="appendNumber('5')" onmousedown="showTooltip(this, '5')" onmouseup="hideTooltip(this)">5</button>
-            <button class="button" onclick="appendNumber('6')" onmousedown="showTooltip(this, '6')" onmouseup="hideTooltip(this)">6</button>
-            <button class="button operator" onclick="appendOperator('-')" onmousedown="showTooltip(this, 'Odejmowanie')" onmouseup="hideTooltip(this)">-</button>
-            <button class="button" onclick="appendNumber('7')" onmousedown="showTooltip(this, '7')" onmouseup="hideTooltip(this)">7</button>
-            <button class="button" onclick="appendNumber('8')" onmousedown="showTooltip(this, '8')" onmouseup="hideTooltip(this)">8</button>
-            <button class="button" onclick="appendNumber('9')" onmousedown="showTooltip(this, '9')" onmouseup="hideTooltip(this)">9</button>
-            <button class="button operator" onclick="appendOperator('*')" onmousedown="showTooltip(this, 'Mnożenie')" onmouseup="hideTooltip(this)">*</button>
-            <button class="button" onclick="appendNumber('0')" onmousedown="showTooltip(this, '0')" onmouseup="hideTooltip(this)">0</button>
-            <button class="button" onclick="appendOperator('.')" onmousedown="showTooltip(this, 'Kropka')" onmouseup="hideTooltip(this)">.</button>
-            <button class="button operator" onclick="appendOperator('/')" onmousedown="showTooltip(this, 'Dzielenie')" onmouseup="hideTooltip(this)">/</button>
-            <button class="button operator" onclick="appendOperator('**')" onmousedown="showTooltip(this, 'Potęgowanie')" onmouseup="hideTooltip(this)">^</button>
-            <button class="button operator" onclick="appendOperator('%')" onmousedown="showTooltip(this, 'Procent')" onmouseup="hideTooltip(this)">%</button>
-            <button class="button operator" onclick="appendOperator('//')" onmousedown="showTooltip(this, 'Reszta z dzielenia')" onmouseup="hideTooltip(this)">mod</button>
-            <button class="button equal" onclick="calculate()" onmousedown="showTooltip(this, 'Równa się')" onmouseup="hideTooltip(this)">=</button>
-            <button class="button clear" onclick="clearDisplay()" onmousedown="showTooltip(this, 'Wyczyść')" onmouseup="hideTooltip(this)">C</button>
-            <button class="button clear-history" onclick="clearHistory()" onmousedown="showTooltip(this, 'Wyczyść historię')" onmouseup="hideTooltip(this)">Clear History</button>
-        </div>
-        <div class="history" id="history"></div>
+    <h1>Kalkulator Graficzny i Z Pamięcią</h1>
+    <button onclick="toggleView()">Przełącz na Kalkulator</button>
+    <button onclick="toggleView(true)">Przełącz na Funkcje Liniowe</button>
+    
+    <!-- Kalkulator z pamięcią -->
+    <div class="kalkulator" id="kalkulator">
+        <input type="text" class="wyswietlacz" id="wyswietlacz">
+        <div class="przyciski" id="przyciski"></div>
+        <div class="historia" id="historia"></div>
     </div>
 
+    <!-- Kalkulator graficzny -->
+    <div class="controls" id="controls">
+        <h3>Funkcja 1: f(x) = ax + b</h3>
+        <input type="text" id="f1" placeholder="np. 4x + 2" value="1x + 0">
+        <button onclick="rysujFunkcje()">Rysuj Funkcje 1</button>
+        
+        <h3>Funkcja 2: f(x) = ax + b</h3>
+        <input type="text" id="f2" placeholder="np. -2x + 5" value="-1x + 1">
+        <button onclick="rysujFunkcje()">Rysuj Funkcje 2</button>
+
+        <h3>Funkcja 3: f(x) = ax + b</h3>
+        <input type="text" id="f3" placeholder="np. 0.5x - 3" value="0.5x - 2">
+        <button onclick="rysujFunkcje()">Rysuj Funkcje 3</button>
+
+        <h3>Funkcja 4: Za pomocą punktów (x1, y1) i (x2, y2)</h3>
+        <input type="number" id="x1" placeholder="x1" value="4">
+        <input type="number" id="y1" placeholder="y1" value="-2">
+        <input type="number" id="x2" placeholder="x2" value="6">
+        <input type="number" id="y2" placeholder="y2" value="2">
+        <button onclick="rysujFunkcje()">Rysuj Funkcje 4</button>
+    </div>
+
+    <canvas id="wykres" width="600" height="400"></canvas>
+    <div class="tooltip" id="tooltip"></div>
+
     <script>
-        let display = document.getElementById('display');
-        let history = document.getElementById('history');
-        let currentInput = '';
-        let operationsHistory = [];
-        let tooltipTimeout;
+        // Kalkulator z pamięcią
+        const przyciskiNumeryczne = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'];
+        const przyciskiOperatory = [
+            { znak: '+', tooltip: 'Dodawanie' },
+            { znak: '-', tooltip: 'Odejmowanie' },
+            { znak: '*', tooltip: 'Mnożenie' },
+            { znak: '/', tooltip: 'Dzielenie' },
+            { znak: '**', tooltip: 'Potęgowanie' },
+            { znak: '%', tooltip: 'Procent' },
+            { znak: '//', tooltip: 'Reszta z dzielenia' }
+        ];
 
-        function appendNumber(number) {
-            currentInput += number;
-            display.value = currentInput;
+        const wyswietlacz = document.getElementById('wyswietlacz');
+        const wyswietlaczHistorii = document.getElementById('historia');
+        let aktualneDzialanie = '';
+        let historiaOperacji = [];
+        let czasPodpowiedzi;
+
+        // Generowanie przycisków numerycznych
+        const przyciski = document.getElementById('przyciski');
+        przyciskiNumeryczne.forEach(numer => dodajPrzycisk(numer, '', 'dodajDoWyswietlacza', numer));
+        przyciskiOperatory.forEach(op => dodajPrzycisk(op.znak, 'operator', 'dodajOperator', op.tooltip));
+        dodajPrzycisk('=', 'rowna-sie', 'oblicz', 'Równa się');
+        dodajPrzycisk('C', 'wyczysc', 'wyczyscWyswietlacz', 'Wyczyść');
+        dodajPrzycisk('Clear History', 'wyczysc-historie', 'wyczyscHistorie', 'Wyczyść historię');
+
+        function dodajPrzycisk(tekst, klasa, funkcja, tooltip) {
+            const przycisk = document.createElement('button');
+            przycisk.className = `przycisk ${klasa}`;
+            przycisk.textContent = tekst;
+            przycisk.onclick = () => window[funkcja](tekst);
+            przycisk.onmousedown = () => pokazPodpowiedz(przycisk, tooltip);
+            przycisk.onmouseup = () => ukryjPodpowiedz(przycisk);
+            przyciski.appendChild(przycisk);
         }
 
-        function appendOperator(operator) {
-            if (operator === '//') {
-                currentInput += ' % ';
-            } else {
-                currentInput += ' ' + operator + ' ';
-            }
-            display.value = currentInput;
+        function dodajDoWyswietlacza(numer) {
+            aktualneDzialanie += numer;
+            wyswietlacz.value = aktualneDzialanie;
         }
 
-        function calculate() {
+        function dodajOperator(operator) {
+            aktualneDzialanie += ' ' + (operator === '//' ? '%' : operator) + ' ';
+            wyswietlacz.value = aktualneDzialanie;
+        }
+
+        function oblicz() {
             try {
-                let result = eval(currentInput.replace(/\/\//g, '%'));
-                display.value = result;
-                addToHistory(currentInput + ' = ' + result);
-                currentInput = result.toString();
-            } catch (error) {
-                display.value = 'Error';
-                currentInput = '';
+                const wynik = eval(aktualneDzialanie.replace('x', '*').replace('÷', '/'));
+                historiaOperacji.push(aktualneDzialanie + ' = ' + wynik);
+                wyswietlacz.value = wynik;
+                aktualneDzialanie = '';
+                wyswietlaczHistorii.innerHTML = historiaOperacji.map(dzialanie => 
+                    `<div class="element-historii" onclick="wstawDzialanie('${dzialanie}')">${dzialanie}</div>`
+                ).join('');
+            } catch (e) {
+                wyswietlacz.value = 'Błąd';
             }
         }
 
-        function clearDisplay() {
-            currentInput = '';
-            display.value = '';
+        function wstawDzialanie(dzialanie) {
+            aktualneDzialanie = dzialanie.split('=')[0].trim();
+            wyswietlacz.value = aktualneDzialanie;
         }
 
-        function clearHistory() {
-            operationsHistory = [];
-            updateHistoryDisplay();
+        function wyczyscWyswietlacz() {
+            aktualneDzialanie = '';
+            wyswietlacz.value = '';
         }
 
-        function addToHistory(operation) {
-            operationsHistory.unshift(operation);
-            if (operationsHistory.length > 20) {
-                operationsHistory.pop();
-            }
-            updateHistoryDisplay();
+        function wyczyscHistorie() {
+            historiaOperacji = [];
+            wyswietlaczHistorii.innerHTML = '';
         }
 
-        function updateHistoryDisplay() {
-            history.innerHTML = '';
-            operationsHistory.forEach((op, index) => {
-                let historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                historyItem.textContent = op;
-                historyItem.onclick = () => loadFromHistory(index);
-                history.appendChild(historyItem);
-            });
+        function pokazPodpowiedz(przycisk, tooltip) {
+            const tooltipElement = document.getElementById('tooltip');
+            tooltipElement.textContent = tooltip;
+            tooltipElement.style.display = 'block';
+            tooltipElement.style.left = (przycisk.offsetLeft + przycisk.offsetWidth / 2 - tooltipElement.offsetWidth / 2) + 'px';
+            tooltipElement.style.top = (przycisk.offsetTop - tooltipElement.offsetHeight) + 'px';
         }
 
-        function loadFromHistory(index) {
-            let operation = operationsHistory[index];
-            let [expression, result] = operation.split(' = ');
-            currentInput = expression;
-            display.value = result;
+        function ukryjPodpowiedz() {
+            document.getElementById('tooltip').style.display = 'none';
         }
 
-        function showTooltip(button, text) {
-            tooltipTimeout = setTimeout(() => {
-                let tooltip = document.createElement('div');
-                tooltip.className = 'tooltip';
-                tooltip.textContent = text;
-                button.appendChild(tooltip);
-                tooltip.style.display = 'block';
-            }, 500); 
+        function toggleView(isFunkcje = false) {
+            document.getElementById('kalkulator').style.display = isFunkcje ? 'none' : 'block';
+            document.getElementById('controls').style.display = isFunkcje ? 'block' : 'none';
         }
-
-        function hideTooltip(button) {
-            clearTimeout(tooltipTimeout);
-            let tooltip = button.querySelector('.tooltip');
-            if (tooltip) {
-                tooltip.remove();
-            }
-        }
-
-        document.addEventListener('keydown', (event) => {
-            const key = event.key;
-            if (!isNaN(key) || key === '.') {
-                appendNumber(key);
-            } else if (['+', '-', '*', '/', '%', '^'].includes(key)) {
-                appendOperator(key === '^' ? '**' : key);
-            } else if (key === 'Enter') {
-                calculate();
-            } else if (key === 'Backspace') {
-                clearDisplay();
-            }
-        });
     </script>
 </body>
 </html>
