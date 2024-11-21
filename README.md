@@ -22,8 +22,46 @@ Kalkulator
    23.09.2024
    - Dodanie kodu aplikacji do pliku  Beta
    - Zmiana nazwy pliku  Beta  na  Beta.html
+
+   03.10.2024
+   - powstaje aplikacja w wersji  0.10 Alpha.Beta
+
+   15.10.2024
+   - powstaje aplikacja w wersji  0.20 Alpha.Beta
+
+   20.10.2024
+   - powstaje aplikacja w wersji  0.30 Alpha.Beta
+  
+   20.11.2024
+   - powstaje aplikacja w wersji  0.40 Alpha.Beta
+  
+   21.11.2024
+   - powstaje aplikacja w wersji  0.50 Alpha.Beta
      
-WERSYFIKACJA
+     
+WERSYFIKACJA:
 1. ver. 0.00 Alpha.Beta
 - powstanie pliku aplikacji
 - powstanie kodu aplikacji
+  
+2. ver. 0.10 Alpha.Beta
+- dodanie interfejsu graficznego
+- dodanie przycisków z znakami zdziałań
+- dodanie interakcji z użytkownikiem poprzez klikanie przycisków myszką
+  
+3. ver. 0.20 Alpha.Beta
+- dodanie histori do kalkulatora
+- dodanie przycisku usuwania histori
+  
+4. ver. 0.30 Alpha.Beta
+- dodanie większej histori do kalkulatora
+- dodanie cofania sie do dowolneko miejsca zapisanego w histori
+  
+5. ver. 0.40 Alpha.Beta
+- dodanie przycisków zmiany kalkulatora standardowego na wykres funkcji liniowej
+- powiększenie interfejsu kalkulatora
+  
+6. ver. 0.50 Alpha.Beta
+- dodanie wpisania warości do 4 funkcji i wyświetlenie ich na wykresie
+- dodanie interfejsu do wykresu funkcji liniowej
+  
