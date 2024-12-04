@@ -37,6 +37,9 @@ Kalkulator klasyczny i graficzny
   
    21.11.2024
    - powstaje aplikacja w wersji  0.50 Alpha.Beta
+  
+   04.12.2024
+   - powstaje aplikacja w wersji  0.60 Alpha.Beta
      
      
 WERSYFIKACJA:
@@ -64,4 +67,7 @@ WERSYFIKACJA:
 6. ver. 0.50 Alpha.Beta
 - dodanie wpisania warości do 4 funkcji i wyświetlenie ich na wykresie
 - dodanie interfejsu do wykresu funkcji liniowej
+
+7. ver. 0.60 Alpha.Beta
+- poprawki związane z kodem przy funkcji liniowej
   
