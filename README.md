@@ -1,7 +1,7 @@
 # Projekt-aplikacji
-Kalkulator
+Kalkulator klasyczny i graficzny
 
-1. Aplikacja służy do obliczania działań matematycznych.
+1. Aplikacja służy do obliczania działań matematycznych i rysowania wykresu funkcji liniowych.
 
 2. Działa poprzez naciśnięcie odpowiedniej liczby na klawiatuże lub ekranie rozkazu.
 
