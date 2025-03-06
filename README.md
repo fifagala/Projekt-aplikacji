@@ -40,6 +40,9 @@ Kalkulator klasyczny i graficzny
   
    04.12.2024
    - powstaje aplikacja w wersji  0.60 Alpha.Beta
+
+  06.03.2025
+   - zostaje dodana nowa wersja aplikacji bazowej 0.70 Alpha.Beta
      
      
 WERSYFIKACJA:
@@ -70,4 +73,8 @@ WERSYFIKACJA:
 
 7. ver. 0.60 Alpha.Beta
 - poprawki związane z kodem przy funkcji liniowej
+
+8. ver. 0.70 Alpha Beta
+- przeprowadzono testowanie aplikacji pod kątem błędów :
+błędów nie znaleziono aplikacji działa w 100% poprawnie
   
