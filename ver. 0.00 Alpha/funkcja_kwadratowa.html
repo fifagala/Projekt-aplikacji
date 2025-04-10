@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funkcja Kwadratowa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .input-group {
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 80px;
+            text-align: center;
+        }
+        
+        .controls button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+        
+        .controls button:hover {
+            background-color: #45a049;
+        }
+        
+        canvas {
+            border: 1px solid #ddd;
+            background-color: white;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .formulas {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            text-align: left;
+        }
+        
+        .formula-section {
+            margin-bottom: 15px;
+        }
+        
+        .formula-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .przyciski-nawigacja {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .przycisk-nawigacja {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .przycisk-nawigacja:hover {
+            background-color: #0b7dda;
+        }
+        
+        .wlasnosci {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fffaf0;
+            border-radius: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Funkcja Kwadratowa</h1>
+        <div class="przyciski-nawigacja">
+            <a href="index.html" class="przycisk-nawigacja">Kalkulator</a>
+            <a href="funkcja_liniowa.html" class="przycisk-nawigacja">Funkcje Liniowe</a>
+        </div>
+        
+        <div class="controls">
+            <h3>Podaj współczynniki funkcji kwadratowej</h3>
+            <div class="input-group">
+                <span>f(x) =</span>
+                <input type="number" id="a" placeholder="a" value="1" step="0.1">
+                <span>x² +</span>
+                <input type="number" id="b" placeholder="b" value="0" step="0.1">
+                <span>x +</span>
+                <input type="number" id="c" placeholder="c" value="0" step="0.1">
+            </div>
+            <button onclick="rysujFunkcje()">Rysuj wykres</button>
+            <button onclick="wyczyscWykres()">Wyczyść wykres</button>
+        </div>
+        
+        <canvas id="wykres" width="600" height="400"></canvas>
+        <div class="tooltip" id="tooltip"></div>
+        
+        <div class="formulas">
+            <h3>Postacie funkcji kwadratowej:</h3>
+            <div class="formula-section">
+                <div class="formula-title">Postać ogólna:</div>
+                <div>f(x) = ax² + bx + c</div>
+            </div>
+            <div class="formula-section">
+                <div class="formula-title">Postać kanoniczna:</div>
+                <div>f(x) = a(x - p)² + q</div>
+                <div id="kanoniczna">...</div>
+            </div>
+            <div class="formula-section">
+                <div class="formula-title">Postać iloczynowa:</div>
+                <div id="iloczynowa">...</div>
+            </div>
+        </div>
+        
+        <div class="wlasnosci" id="wlasnosci">
+            <h3>Właściwości funkcji:</h3>
+            <div id="wlasnosci-tresc">...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentFunction = null;
+        const tooltip = document.getElementById('tooltip');
+        const points = [];
+        
+        function rysujFunkcje() {
+            const a = parseFloat(document.getElementById('a').value);
+            const b = parseFloat(document.getElementById('b').value);
+            const c = parseFloat(document.getElementById('c').value);
+            
+            currentFunction = { a, b, c };
+            points.length = 0;
+            
+            const canvas = document.getElementById('wykres');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            rysujOsie(canvas, ctx);
+            rysujWykres(canvas, ctx, a, b, c);
+            obliczWlasnosci(a, b, c);
+        }
+        
+        function wyczyscWykres() {
+            currentFunction = null;
+            points.length = 0;
+            const canvas = document.getElementById('wykres');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            rysujOsie(canvas, ctx);
+            
+            document.getElementById('kanoniczna').textContent = '...';
+            document.getElementById('iloczynowa').textContent = '...';
+            document.getElementById('wlasnosci-tresc').textContent = '...';
+        }
+        
+        function rysujOsie(canvas, ctx) {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 0.5;
+            
+            
+            for (let x = 0; x <= width; x += 20) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y <= height; y += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 1;
+            
+            
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
+            
+            
+            ctx.beginPath();
+            ctx.moveTo(width / 2, 0);
+            ctx.lineTo(width / 2, height);
+            ctx.stroke();
+            
+            
+            ctx.beginPath();
+            ctx.moveTo(width - 10, height / 2 - 5);
+            ctx.lineTo(width, height / 2);
+            ctx.lineTo(width - 10, height / 2 + 5);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(width / 2 - 5, 10);
+            ctx.lineTo(width / 2, 0);
+            ctx.lineTo(width / 2 + 5, 10);
+            ctx.stroke();
+            
+            
+            ctx.font = '12px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText('x', width - 15, height / 2 - 10);
+            ctx.fillText('y', width / 2 + 10, 15);
+            
+            
+            for (let x = width / 2 + 20; x < width; x += 20) {
+                ctx.fillText((x - width / 2) / 20, x - 5, height / 2 + 15);
+            }
+            
+            for (let x = width / 2 - 20; x > 0; x -= 20) {
+                ctx.fillText((x - width / 2) / 20, x - 5, height / 2 + 15);
+            }
+            
+            for (let y = height / 2 + 20; y < height; y += 20) {
+                ctx.fillText((height / 2 - y) / 20, width / 2 + 10, y + 5);
+            }
+            
+            for (let y = height / 2 - 20; y > 0; y -= 20) {
+                ctx.fillText((height / 2 - y) / 20, width / 2 + 10, y + 5);
+            }
+        }
+        
+        function rysujWykres(canvas, ctx, a, b, c) {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            
+            for (let xPixel = 0; xPixel <= width; xPixel++) {
+                const x = (xPixel - width / 2) / 20;
+                const y = a * x * x + b * x + c;
+                const yPixel = height / 2 - y * 20;
+                
+                if (xPixel === 0) {
+                    ctx.moveTo(xPixel, yPixel);
+                } else {
+                    ctx.lineTo(xPixel, yPixel);
+                }
+                
+                if (xPixel % 10 === 0) {
+                    points.push({ x: xPixel, y: yPixel, value: { x, y } });
+                }
+            }
+            
+            ctx.stroke();
+            
+            
+            const p = -b / (2 * a);
+            const q = - (b * b - 4 * a * c) / (4 * a);
+            const wierzcholekX = width / 2 + p * 20;
+            const wierzcholekY = height / 2 - q * 20;
+            
+            ctx.fillStyle = 'blue';
+            ctx.beginPath();
+            ctx.arc(wierzcholekX, wierzcholekY, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            
+            const delta = b * b - 4 * a * c;
+            if (delta >= 0) {
+                const x1 = (-b - Math.sqrt(delta)) / (2 * a);
+                const x2 = (-b + Math.sqrt(delta)) / (2 * a);
+                
+                const x1Pixel = width / 2 + x1 * 20;
+                const x2Pixel = width / 2 + x2 * 20;
+                const yPixel = height / 2;
+                
+                ctx.fillStyle = 'green';
+                ctx.beginPath();
+                ctx.arc(x1Pixel, yPixel, 5, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(x2Pixel, yPixel, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+        
+        function obliczWlasnosci(a, b, c) {
+            
+            const p = -b / (2 * a);
+            const q = - (b * b - 4 * a * c) / (4 * a);
+            document.getElementById('kanoniczna').textContent = `f(x) = ${a}(x - ${p.toFixed(2)})² + ${q.toFixed(2)}`;
+            
+            
+            const delta = b * b - 4 * a * c;
+            let iloczynowaText = "Brak postaci iloczynowej (Δ < 0)";
+            
+            if (delta > 0) {
+                const x1 = (-b - Math.sqrt(delta)) / (2 * a);
+                const x2 = (-b + Math.sqrt(delta)) / (2 * a);
+                iloczynowaText = `f(x) = ${a}(x - ${x1.toFixed(2)})(x - ${x2.toFixed(2)})`;
+            } else if (delta === 0) {
+                const x0 = -b / (2 * a);
+                iloczynowaText = `f(x) = ${a}(x - ${x0.toFixed(2)})²`;
+            }
+            
+            document.getElementById('iloczynowa').textContent = iloczynowaText;
+            
+            
+            let wlasnosciHTML = `
+                <p><strong>Współczynniki:</strong> a = ${a}, b = ${b}, c = ${c}</p>
+                <p><strong>Wierzchołek paraboli:</strong> W(${p.toFixed(2)}, ${q.toFixed(2)})</p>
+                <p><strong>Miejsca zerowe:</strong> `;
+            
+            if (delta > 0) {
+                const x1 = (-b - Math.sqrt(delta)) / (2 * a);
+                const x2 = (-b + Math.sqrt(delta)) / (2 * a);
+                wlasnosciHTML += `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+            } else if (delta === 0) {
+                const x0 = -b / (2 * a);
+                wlasnosciHTML += `x₀ = ${x0.toFixed(2)} (podwójne)`;
+            } else {
+                wlasnosciHTML += `Brak miejsc zerowych`;
+            }
+            
+            wlasnosciHTML += `</p>
+                <p><strong>Delta (Δ):</strong> ${delta.toFixed(2)}</p>
+                <p><strong>Ramię paraboli:</strong> ${a > 0 ? 'skierowane w górę' : 'skierowane w dół'}</p>
+                <p><strong>Zbiór wartości:</strong> ${a > 0 ? `⟨${q.toFixed(2)}, ∞)` : `(-∞, ${q.toFixed(2)}⟩`}</p>
+                <p><strong>Monotoniczność:</strong> 
+                    ${a > 0 ? 
+                      `malejąca w (-∞, ${p.toFixed(2)}⟩, rosnąca w ⟨${p.toFixed(2)}, ∞)` : 
+                      `rosnąca w (-∞, ${p.toFixed(2)}⟩, malejąca w ⟨${p.toFixed(2)}, ∞)`}
+                </p>`;
+            
+            document.getElementById('wlasnosci-tresc').innerHTML = wlasnosciHTML;
+        }
+        
+        
+        canvas.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            const znalezionyPunkt = points.find(punkt =>
+                Math.abs(punkt.x - mouseX) < 5 && Math.abs(punkt.y - mouseY) < 5
+            );
+            
+            if (znalezionyPunkt) {
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${event.clientX + 10}px`;
+                tooltip.style.top = `${event.clientY + 10}px`;
+                tooltip.innerHTML = `x: ${znalezionyPunkt.value.x.toFixed(2)}, y: ${znalezionyPunkt.value.y.toFixed(2)}`;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        });
+        
+        
+        window.onload = function() {
+            const canvas = document.getElementById('wykres');
+            const ctx = canvas.getContext('2d');
+            rysujOsie(canvas, ctx);
+        };
+    </script>
+</body>
+</html>
