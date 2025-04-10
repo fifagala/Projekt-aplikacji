@@ -7,6 +7,14 @@ Kalkulator klasyczny i graficzny
 
 3. Interakcja polega na tym, że użytkownik musi wpisać na klawiaturze lub kliknąć na ekranie za pomocą myszki odpowiednie cyfry i znaki.
 
+#Jak uruchomić aplikacje 
+
+1.Pobierz folder ze wszystkimi plikami
+
+2.Wypakuj folder zip
+
+3.Uruchom plik o nazwie index.html
+
    Dziennik zmian:
 
    17.09.2024
@@ -43,6 +51,12 @@ Kalkulator klasyczny i graficzny
 
   06.03.2025
    - zostaje dodana nowa wersja aplikacji bazowej 0.70 Alpha.Beta
+
+  10.04.2025
+   - zostaje dodana nowa wersja aplikacji bazowej 0.80 Alpha.Beta
+
+  10.04.2025
+   - zostaje dodana nowa wersja aplikacji bazowej 0.90 Alpha.Beta
      
      
 WERSYFIKACJA:
@@ -77,4 +91,13 @@ WERSYFIKACJA:
 8. ver. 0.70 Alpha Beta
 - przeprowadzono testowanie aplikacji pod kątem błędów :
 błędów nie znaleziono aplikacji działa w 100% poprawnie
+
+9. ver. 0.80 Alpha Beta
+- podzielono kod na oddzielne podstrony
+- dodano nowy wygląd interfejsu
+
+10. ver. 0.90 Alpha Beta
+- dodanie nowych funkcji:
+- dodanie funkcji kwadratowej
+- dodanie fizyki kwantowj
   
