@@ -57,7 +57,13 @@ Kalkulator klasyczny i graficzny
 
   10.04.2025
    - zostaje dodana nowa wersja aplikacji bazowej 0.90 Alpha.Beta
-     
+
+  16.04.2025
+   - zostaje dodana nowa wersja aplikacji bazowej 0.95 Alpha.Beta
+   - zostaje dodana nowa wersja aplikacji bazowej 1.0 Alpha.Beta
+   - zostaje dodana nowa wersja aplikacji bazowej 1.0
+
+  
      
 WERSYFIKACJA:
 1. ver. 0.00 Alpha.Beta
@@ -100,4 +106,14 @@ błędów nie znaleziono aplikacji działa w 100% poprawnie
 - dodanie nowych funkcji:
 - dodanie funkcji kwadratowej
 - dodanie fizyki kwantowj
+
+11. ver. 0.95 Alpha Beta
+- dodanie nowych funkcji:
+- dodanie nawiasów do kalkulatora podstawowego
+
+12. ver. 1.0 Alpha Beta
+- zrobienie debugowania aplikacji sposobem testowania manualnego(wszystko jest sprawne)
+
+13. ver. 1.0
+- aplikacja gotowa do korzystania bez błędów
   
