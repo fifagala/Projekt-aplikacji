@@ -117,6 +117,15 @@
             background-color: #f5f5f5;
         }
 
+        .przycisk-nawias {
+            background-color: #9c27b0;
+            color: white;
+        }
+
+        .przycisk-nawias:hover {
+            background-color: #8c17a0;
+        }
+
         .przycisk-funkcje {
             background-color: #2196F3;
             color: white;
@@ -172,7 +181,6 @@
     </div>
 
     <script>
-        
         const przyciskiNumeryczne = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'];
         const przyciskiOperatory = [
             { znak: '+', tooltip: 'Dodawanie' },
@@ -183,16 +191,17 @@
             { znak: '%', tooltip: 'Procent' },
             { znak: '//', tooltip: 'Reszta z dzielenia' }
         ];
+        const przyciskiNawiasy = ['(', ')'];
 
         const wyswietlacz = document.getElementById('wyswietlacz');
         const wyswietlaczHistorii = document.getElementById('historia');
         let aktualneDzialanie = '';
         let historiaOperacji = [];
 
-        
         const przyciski = document.getElementById('przyciski');
         przyciskiNumeryczne.forEach(numer => dodajPrzycisk(numer, '', 'dodajDoWyswietlacza', numer));
         przyciskiOperatory.forEach(op => dodajPrzycisk(op.znak, 'operator', 'dodajOperator', op.tooltip));
+        przyciskiNawiasy.forEach(nawias => dodajPrzycisk(nawias, 'przycisk-nawias', 'dodajNawias', nawias === '(' ? 'Nawias otwierający' : 'Nawias zamykający'));
         dodajPrzycisk('=', 'rowna-sie', 'oblicz', 'Równa się');
         dodajPrzycisk('C', 'wyczysc', 'wyczyscWyswietlacz', 'Wyczyść');
         dodajPrzycisk('Clear History', 'wyczysc-historie', 'wyczyscHistorie', 'Wyczyść historię');
@@ -213,6 +222,11 @@
 
         function dodajOperator(operator) {
             aktualneDzialanie += ' ' + (operator === '//' ? '%' : operator) + ' ';
+            wyswietlacz.value = aktualneDzialanie;
+        }
+
+        function dodajNawias(nawias) {
+            aktualneDzialanie += nawias;
             wyswietlacz.value = aktualneDzialanie;
         }
 
